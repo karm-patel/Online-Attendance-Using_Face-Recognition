@@ -27,6 +27,10 @@ app.config['PDF_LOC'] = os.path.join(os.getcwd(), 'Attendance_pdf') # -->  To St
 app.config['XL_LOC'] = os.path.join(os.getcwd(), 'Attendance_Sheets')# --> To Store Excel sheets
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'heic', 'jpeg', 'gif',''}
 
+today_date = datetime.now()
+today_day = today_date.strftime("%A")
+
+
 def allowed_file(file):
     temp = file[::-1]
     if '.' not in file:
@@ -83,7 +87,8 @@ def facultyhome():
 @faculty_login_required
 def timetable():
     #print(current_user)
-    today_date = str(datetime.now().date())
+    today_date = datetime.now()
+    today_day = today_date.strftime("%A")
     #print(today_date)
     #form  = AddTimeTableForm()
     if request.method == "POST":
@@ -92,6 +97,7 @@ def timetable():
         sem = request.form["sem"]
         batch = request.form["div"]
         slot = request.form["slot"][0]
+        day = request.form["day"]
 
         #temp_id = current_user.get_id()
         #print(temp_id) --> Gives faculty id of user tabel
@@ -102,7 +108,7 @@ def timetable():
         tt_taken = TimeTable.query.filter(and_(TimeTable.slot == slot,
                                             TimeTable.sem == sem,
                                             TimeTable.batch == batch,
-                                            TimeTable.date == today_date)).first()
+                                            TimeTable.day == today_day)).first()
         
         #print(tt_taken)
         if tt_taken:
@@ -118,7 +124,7 @@ def timetable():
             return redirect(url_for("timetable"))
 
         entry = TimeTable(subject = sub, sem = sem, batch=batch,slot=slot,
-                          faculty_id=faculty_id, date = today_date)
+                          faculty_id=faculty_id, day = day)
         #db.create_all()
         db.session.add(entry)
         try:
@@ -180,7 +186,7 @@ def student_total_attendance():
 
 
     for lec in lecs:
-        temp = {"subject":lec.subject,"slot":lec.slot,"present":0, "date" : lec.date}
+        temp = {"subject":lec.subject,"slot":lec.slot,"present":0, "date" : lec.day}
 
         #note total attendance
         if lec.id in attended_lecs_ids:
@@ -201,7 +207,6 @@ def student_total_attendance():
 @app.route("/student-today-attendance", methods=["GET","POST"])
 @student_login_required
 def student_today_attendance():
-    today_date = str(datetime.today().date())
     #get student id, student name & batch
     user_email = current_user.get_email()
     #email = user.query.filter_by(userid=user_id).first().email
@@ -224,7 +229,7 @@ def student_today_attendance():
     row = []
 
     #TimeTable rows
-    lecs = TimeTable.query.filter_by(sem = sem, batch = div, date = today_date).all()
+    lecs = TimeTable.query.filter_by(sem = sem, batch = div, day = today_day).all()
 
     for lec in lecs:
         temp = {"subject":lec.subject, "slot":lec.slot,"time":"-","status":"absent"}
@@ -250,7 +255,7 @@ def faculty_attendance():
 
     temp_mail = current_user.get_email()
     faculty_id = faculty.query.filter_by(email = temp_mail).first().id
-    row = TimeTable.query.filter_by(faculty_id=faculty_id, date = today_date).distinct().all()
+    row = TimeTable.query.filter_by(faculty_id=faculty_id, day = today_day).distinct().all()
 
     form  = Search()
     sub = [row[i].subject for i in range(len(row))]
@@ -261,7 +266,7 @@ def faculty_attendance():
         div = request.form['div']
         sem = request.form['sem']
         #print(sub, div, sem)
-        row = TimeTable.query.filter_by(faculty_id=faculty_id, sem = sem, batch = div, subject = sub, date = today_date).all()
+        row = TimeTable.query.filter_by(faculty_id=faculty_id, sem = sem, batch = div, subject = sub, day = today_day).all()
         print(row)
 
         if not row:
@@ -359,12 +364,13 @@ def faculty_total_attendance():
 
                 if not student_rows:
                     flash(f"You hadn't taken Any Attendance for Students of {sem} - {div} for Subject {sub}","danger")
+                    return render_template("Admin/total_attendance.html", form = form)
                 
                 temp = {
                         "sem"  : sem,
                         "batch": div,
                         "slot" : row[i].slot,
-                        "date" : row[i].date
+                        "date" : row[i].day
                         }
                 #student_user_id = student.id
                 #student_user_id = user.query.filter_by(email=student.email).first().userid
@@ -454,6 +460,7 @@ def faculty_total_attendance():
 
             enrs = [] # To store available enrollments of searched semester and division
             all_date = []# To store Dates of month
+            all_days = []
             final_list = []
             enr = Student.query.filter_by(sem = sem, div = div).all()
             for i in range(len(enr)):
@@ -468,8 +475,11 @@ def faculty_total_attendance():
             
             # Putting into one list 
             all_date.append('Enrollment/Date')
+            all_days.append("Day_Name")
             for j in range(len(datelist)):
-                all_date.append(str(datelist[j].date()))
+                all_date.append(str(datelist[j].date())) 
+                temp = datelist[j].date()
+                all_days.append(temp.strftime("%A"))
 
             # Making dates as First row
             final_list.append(all_date)
@@ -487,7 +497,7 @@ def faculty_total_attendance():
                                                     sem = sem,
                                                     batch = div,
                                                     subject = sub,
-                                                    date = all_date[j]).first()
+                                                    day = all_days[j]).first()
                     #print(tt_id)
 
                     if tt_id:
