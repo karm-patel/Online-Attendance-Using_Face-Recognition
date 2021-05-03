@@ -108,7 +108,7 @@ def timetable():
         tt_taken = TimeTable.query.filter(and_(TimeTable.slot == slot,
                                             TimeTable.sem == sem,
                                             TimeTable.batch == batch,
-                                            TimeTable.day == today_day)).first()
+                                            TimeTable.day == day)).first()
         
         #print(tt_taken)
         if tt_taken:
