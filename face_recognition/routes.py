@@ -154,7 +154,7 @@ def student_total_attendance():
     #student_id = Student.query.filter_by(email = email).first()
 
     if not student_id:
-        flash("Can't open Attendance Page, First upload your pictures here!","danger")
+        flash("Looks like you haven't uploaded your photos, First upload your photos here!","danger")
         return redirect(url_for("add_photos"))
 
     student_id = student_id.id
@@ -186,7 +186,7 @@ def student_total_attendance():
 
 
     for lec in lecs:
-        temp = {"subject":lec.subject,"slot":lec.slot,"present":0, "date" : lec.day}
+        temp = {"subject":lec.subject,"slot":lec.slot,"present":0, "day" : lec.day}
 
         #note total attendance
         if lec.id in attended_lecs_ids:
@@ -223,9 +223,10 @@ def student_today_attendance():
     user_data = {"name": name, "batch": batch}
 
     #getting which lectures are attended
-    attended_lecs = Attendence.query.filter_by(student_id = student_id,date=today_date).all()
+    #print(str(today_date.date()))
+    attended_lecs = Attendence.query.filter_by(student_id = student_id, date=str(today_date.date())).all()
     attended_lecs_ids = [each.timetable_id for each in attended_lecs]
-    print(attended_lecs_ids)
+    #print(attended_lecs_ids)
     row = []
 
     #TimeTable rows
@@ -239,8 +240,8 @@ def student_today_attendance():
             temp["status"] = "PRESENT"
         row.append(temp)
 
-    print(user_data)
-    print(row)
+    #print(user_data)
+    #print(row)
 
     '''
     user_data.keys= name,batch
