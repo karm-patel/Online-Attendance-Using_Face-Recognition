@@ -214,19 +214,22 @@ def student_today_attendance():
     if not student_details:
         flash("Can't open Attendance Page, First upload your pictures here!","danger")
         return redirect(url_for("add_photos"))
+
     student_id = student_details.id
-    student = Student.query.filter_by(id = student_id).first()
-    name = student.name
-    sem = student.sem
-    div = student.div
-    batch = str(sem) + "-" + str(student.div)
+    name = student_details.name
+    print(f"student_id:{student_id}")
+    print(f"name:{name}")
+    sem = student_details.sem
+    div = student_details.div
+    batch = str(sem) + "-" + str(student_details.div)
     user_data = {"name": name, "batch": batch}
+
 
     #getting which lectures are attended
     #print(str(today_date.date()))
     attended_lecs = Attendence.query.filter_by(student_id = student_id, date=str(today_date.date())).all()
     attended_lecs_ids = [each.timetable_id for each in attended_lecs]
-    #print(attended_lecs_ids)
+    print(f"attended_lecs_ids:{attended_lecs_ids}")
     row = []
 
     #TimeTable rows
@@ -732,5 +735,70 @@ def update_model():
 def on_camera():
     print(os.getcwd())
     #modules.add_new_persons()
-    LiveFaceRecognition.camera()
+    attendance_marked = LiveFaceRecognition.camera()
+
+    #get already present students
+    slot = int(modules.get_slot())
+
+    print(f"Time Table slot:{slot}")
+    today_date1 = datetime.now()
+    today_day = today_date1.strftime("%A")
+    print(f"today_day:{today_day}")
+
+
+    #get faculty id
+    faculty_email = current_user.get_email()
+    faculty_id = faculty.query.filter_by(email=faculty_email).first().id
+
+    print(f"faculty_id:{faculty_id}")
+
+    #get current-lecture details
+    timetable_details = TimeTable.query.filter_by(slot=slot, faculty_id=faculty_id, day=today_day)
+    if timetable_details.first():
+        print("time table exist")
+        timetable_details = timetable_details.first()
+    else:
+        flash("Opps! time table on current slot is not found","danger")
+        return redirect(url_for("facultyhome"))
+
+    timetable_id = timetable_details.id
+    print(f"timetable_id:{timetable_id}")
+
+    #get today attendance details if any
+    today_data = Attendence.query.filter_by(timetable_id=timetable_id, date=str(datetime.today().date()))
+
+    attendence_taken = {}
+    if today_data:
+        for each in today_data.all():
+            student_id = each.student_id
+            student_name = Student.query.filter_by(id=student_id).first().name
+            print(f"student name={student_name}")
+            attendence_taken[student_name] = 1
+    print(f"Current Attendance:{attendence_taken}")
+
+    attendance_done = []
+    today_date = str(datetime.today().date())
+    for present_student in attendance_marked:
+        if present_student not in attendence_taken:
+            '''
+            record dictionary element :
+            key = student name
+            value = { frame_count, confidence,time}
+            '''
+            record = attendance_marked[present_student]
+            student_name = present_student
+            #get student_id using student_label(name)
+            student = Student.query.filter_by(name=student_name).first()
+            student_id = student.id
+            #check wether student is from same sem & same division where current lecture is helding
+            lecture_batch = [timetable_details.sem, timetable_details.batch]
+            student_batch = [student.sem, student.div]
+            if lecture_batch == student_batch:
+                print(f"record added:{record}")
+                attendance = Attendence(date = today_date, time = record["time"],student_id=student_id,timetable_id=timetable_id)
+                attendance_done.append(present_student)
+                db.session.add(attendance)
+
+    db.session.commit()
+    print(f"Attendance Marked:{attendance_done}")
     return render_template("Admin/index.html")

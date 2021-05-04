@@ -1,0 +1,24 @@
+I made following changes(04/05/2021)
+1)LiveFaceRecognition.py
+-security layer added to get better result of face recogmition
+- make different functions which can be used in face recognition
+- seperate database process & face recognition
+
+2)routes.py
+def on_camera():
+- add database layer to add attendance
+- mark attendance only of those students who have same division & same sem of current lecture
+
+3)__init__.py
+- load all types of pretrained model here
+
+
+Observations:
+1) Where is the name/enrollment of Todays attendance in faculty
+2) If you are applying 5 days TT then you have to change total days accordingly
+3) total attendance student side should show total attendance subject wise
+4) db can be copy so we can reduce our hardwork
+5) showing error in downloading pdf
+
+other ideas:
+1) We can add "lectures" page at faculty side so faculty can see only their lectures with timings, sem, div, subject
