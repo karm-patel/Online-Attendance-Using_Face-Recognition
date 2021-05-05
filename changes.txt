@@ -1,4 +1,4 @@
-I made following changes(04/05/2021)
+I made following changes(04/05/2021) -- Modifier : Karm
 1)LiveFaceRecognition.py
 -security layer added to get better result of face recogmition
 - make different functions which can be used in face recognition
@@ -15,13 +15,39 @@ def on_camera():
 4)Dataset, updated model
 - added Mahisha Patel as 4th-G & Isha Patel as 4th-H
 
+
+I made following changes(05/05/2021) -- Modifier : Smit
+
+1)routes.py
+
+def student_total_attendance:
+- Fixed total attendance problem 
+- Now showing subject wise total attended class out of total taken classes since term start
+
+def add-lecture:
+- Added such security that only one lecture can be done for one slot for particular sem and division
+- Also Faculty can not add their already booked slot with another class (I know it's bit rigid)
+
+def faculty-attendance :
+- Fixed problem of repeating same students multiple times
+
+def faculty_total_attendance:
+- Added get_pdf function to get pdf of attendance 
+- Added get_excel function to get excel sheet of attendance since term start to till today 
+- Fixed Problem of layout of attendance by giving such details of students
+
+templates:
+- Changes some layout of attendance pages of students and faculties
+
+
+
 other ideas:
 1) We can add "lectures" page at faculty side so faculty can see only their lectures with timings, sem, div, subject
 
 
 Observations:
-1) Where is the name/enrollment of Todays attendance in faculty
-2) If you are applying 5 days TT then you have to change total days accordingly
-3) total attendance student side should show total attendance subject wise
-4) db can be copy so we can reduce our hardwork
-5) showing error in downloading pdf
+1) Where is the name/enrollment of Todays attendance in faculty : Done
+2) If you are applying 5 days TT then you have to change total days accordingly : Done
+3) total attendance student side should show total attendance subject wise : Done
+4) db can be copy so we can reduce our hardwork 
+5) showing error in downloading pdf : Done (It was because of overridden of methods of 2 different classes)
