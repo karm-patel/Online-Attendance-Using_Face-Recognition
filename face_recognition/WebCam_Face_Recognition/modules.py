@@ -419,6 +419,7 @@ def add_new_persons():
     svm_model, encoder = load_train_face_classifier()
     pickle.dump(svm_model,open(model_path+"svm_train_face_model","wb"))
     pickle.dump(encoder,open(model_path+"label_train_face_encoder","wb"))
-
+    app.config['SVM_MODEL'] = svm_model
+    app.config['LABEL_ENCODER'] = encoder
     print(f"Affected labels:{affected_labels}\nModel Successfully Retrained!")
     return affected_labels

@@ -119,7 +119,7 @@ def camera():
 	# vs = VideoStream(src=0).start()
 
 	# Capture from Phone's Camera
-	url = "http://192.168.0.100:8080/video"
+	url = "http://192.168.0.104:8080/video"
 	vs = cv2.VideoCapture(url)
 	if not vs:
 		print("camera can not capture frame!")
@@ -216,9 +216,7 @@ def camera():
 	cv2.destroyAllWindows()
 
 	# for pc camera
-	vs.release()
 	# vs.stop()
-	print("camera stopped")
 	print(attendance_started)
 	print(attendance_marked)
 	# & 0xFF
