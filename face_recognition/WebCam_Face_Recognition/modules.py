@@ -42,7 +42,7 @@ def make_pdf(data, filename):
     # add style
 
     style = TableStyle([
-        ('BACKGROUND', (0,0), (4,0), colors.grey),
+        ('BACKGROUND', (0,0), (4,0), colors.green),
         ('TEXTCOLOR',(0,0),(-1,0),colors.whitesmoke),
 
         ('ALIGN',(0,0),(-1,-1),'CENTER'),

@@ -51,7 +51,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="col-md-10 col-xs-12">   
+                        <div class="col-md-9 col-xs-12">
                             <div class="main-menu">
                                 <nav>
                                     <ul>
@@ -61,13 +61,18 @@
 
                                         <!--<li class="mega-menu"><a href="dashboard/admin-dashboard.html">Project</a></li>  -->
                                         {% if current_user.is_authenticated %}
-                                        <li class="mega-menu">
-                                            <a href="/my-lecture">My lectures</a>
-                                        </li>
+                                        <li class="dropdown">
+                                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Lecture
+                                                <span class="caret"></span></a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="/my-lecture">My lectures</a>
+                                                </li>
 
-                                        <li class="mega-menu">
-                                            <a href="/add-lecture">Add Lecture</a>
-                                        </li>
+                                                <li>
+                                                    <a href="/add-lecture">Add Lecture</a>
+                                                </li>
+                                            </ul>
 
                                         <li class="dropdown">
                                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Attendance
