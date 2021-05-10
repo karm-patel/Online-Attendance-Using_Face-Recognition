@@ -8,6 +8,9 @@ Observations -karm:
 1)Merge "Add lecture" & "My lectures" in new tab "lectures" in navbar
 2)Showing actual days +1 day in total days of attendance -see UGC CN in  4th-H
 
+Solved Both : - Smit
+08/05
+
 Admin functionalities ideas (priority vise):
 - can verify faculty, reject or accept
 - can see/download any sem's attendance
